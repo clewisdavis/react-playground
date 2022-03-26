@@ -125,5 +125,37 @@ export default ColorChangeButton
 ```
 
 - Now our button looks right, we need to make the click event work.
+- One issue we have is that `setColor` is defined in our `App` component, we don't have access to it in `ColorChangeButton`.
+- But, we have a way to pass data from a parent compoennt to a chile component with `props`
+- Let's pass `setColor` function down as a prop to out `ColorChangeButton` component
 
--
+```JAVASCRIPT
+//App.js
+return (
+    <div className={`react-root ${color}`}>
+      <div className='centered'>
+        <h1>Color Picker</h1>
+        <ColorChangeButton color='red' setColor={setColor} />
+        <ColorChangeButton color='blue' setColor={setColor} />
+        <ColorChangeButton color='yellow' setColor={setColor} />
+      </div>
+    </div>
+)
+```
+
+- Now if you go to `ColorChangeButton` and console.log what the props are, you see you have a second item in the object.
+- And then add the setColor function to the `ColorChangeButton` component
+
+```JAVASCRIPT
+function ColorChangeButton(props) {
+  return (
+   <button className={props.color} onClick={() => props.setColor(props.color)}>
+      {props.color}
+    </button>
+  )
+}
+
+export default ColorChangeButton
+```
+
+- Now each button works, passing the state change function down from parent to child components is called inverse data flow.
