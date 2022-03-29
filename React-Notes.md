@@ -26,3 +26,5 @@ In this tutorial we will build a small game that goes through the concepts.
   - You need to have Node 14.0.0 and npm 5.6 or higher on your machine
   - Under the hood, it uses Babel and webpack, but you don't need to know anything about them.
   - To optimize, run `npm run build` to create a build folder.
+
+## Overview
