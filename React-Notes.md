@@ -140,3 +140,54 @@ class Square extends React.Component {
 
 - Next step, we want the Square component to "remember" that it got clicked, and fill it with an "X" mark.
 - To "remember" things, components use **state**.
+- React components can have state by setting `this.state` in their constructors.
+- `this.state` should be considered private to the React component it's defined in.
+- Let's store the current value of the Square in `this.state`, and change when Square is clicked.
+
+- First, we add a constructor to teh class and initialize the state:
+
+```JAVASCRIPT
+class Square extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: null,
+        };
+    }
+}
+```
+
+- NOTE: In JS classes, you ned to always call `super` when defining the constructor of a subclass. All React component classes that have a `constructor` should start wtih a `super(props)` call.
+
+- Now change the Square's `render` method to display the current state value when clicked:
+  - Replace `this.props.value` with `this.state.value` inside the `<button>` tag.
+  - Update the onClick handler with `onClick={ () => this.setState({value: 'X'})}
+  - Put the `className` and `onClick` props on seperate lines for better readability.
+
+- Final code should look like this:
+
+```JAVASCRIPT
+class Square extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: null,
+    };
+  }
+
+  render() {
+    return (
+      <button
+        className="square"        
+        onClick={() => this.setState({value: 'X'})}      
+      >
+        {this.state.value}      
+      </button>
+    );
+  }
+}
+```
+
+- By calling `this.setState` form an `onClick` handler int he Square's `render` method, we tell react to re-render that Square whenever it's `<button>` is clicked.
+- After the update, the Square's `this.state.value` will be `'X'`, so we will see the X on the game board.
+- When you call `setState` in a component, React automatically updates teh child components inside of it too.
