@@ -191,3 +191,55 @@ class Square extends React.Component {
 - By calling `this.setState` form an `onClick` handler int he Square's `render` method, we tell react to re-render that Square whenever it's `<button>` is clicked.
 - After the update, the Square's `this.state.value` will be `'X'`, so we will see the X on the game board.
 - When you call `setState` in a component, React automatically updates teh child components inside of it too.
+
+## Developer Tools
+
+- The React Devtools extension for [Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) and [FF](https://addons.mozilla.org/en-US/firefox/addon/react-devtools/) lets you inspect a React component tree with your browser dev tools
+- Allow you to check the props and state of your React components
+- After installing, inspect an element in your React app. You will see two React tabs, Components and Profiler.
+
+## Completing the Game
+
+To complete out tic-tac-toe game. We need a way to alternate placing "X"'s and "O"'s on the board. And determine a winner.
+
+### Lifting State Up
+
+- Currently each Square component maintains the game's state.
+- To check for a winner, we wil maintain the value of each of the 9 squares in one location.
+- The best approach is to store the game's state in the parent Board component.
+- The Board component can tell each Square what to display by passing a prop, just like we did when we passed a number to each Square.
+
+**To collect data from multiple children, or have two child components communicate with each other, you need to declare the shared state in their parent component.**
+
+**The parent component can pass the state back down to the children by using props; this keep the child components in sync with each other and with the parent component.**
+
+- Lifting state into a parent component is common when React components are refactored
+- First, add a constructor to the Board and set the Board's initial state to contain an array of 9 nulls, corresponding to the 9 squares.
+
+```JAVASCRIPT
+class Board extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            squares: Arry(9).fill(null),
+        };
+    }
+
+    renderSquare(i) {
+        return <Square value={i} />
+    }
+}
+```
+
+- Now, we modify the Board to instruct each individual Square about it's current value, X, O, or null
+- We have already defined the `squares` array in the Boards constructor, and we need to modify the Boards `renderSquare` method to read from it.
+
+```JAVASCRIPT
+renderSquare(i) {
+    return <Square value={this.state.squares[i]} />;
+}
+```
+
+- Each square will now receive a `value` prop that will either be `X`, `O`, or `null` for empty squares.
+
+- Next we need to change what happens when a Square is clicked.
