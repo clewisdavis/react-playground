@@ -243,3 +243,32 @@ renderSquare(i) {
 - Each square will now receive a `value` prop that will either be `X`, `O`, or `null` for empty squares.
 
 - Next we need to change what happens when a Square is clicked.
+- The Board component maintains which squares are filled.
+- We nee dto create a way for the Square t update teh Board's state.
+- Since hte state is considered private to a component, cannot update the Board's state directly from Square.
+
+- We need to pass down a function form the Board to the Square, and have Square call that function when a square is clicked.
+- Update the `renderSquare` method in Board to:
+
+```JAVASCRIPT
+renderSquare(i) {
+    return (
+        <Square
+          value={this.state.square[i]}
+          onClick={() => this.handleClick(i)}
+        />
+    );
+}
+```
+
+- Now we are passing down two props from Board to Square: `value` and `onClick`.  The `onClick` prop is a function that Square can call when clicked. Now make the updates to Square:
+  - Replace `this.state.value` with `this.props.value` in teh Square `render` method
+  - Replace `this.setState()` with `this.props.onClick()` in the Squares `render` method
+  - Delete the `constructor` from Square because Square no longer keeps track of the game's state.
+
+- When a Square is clicked, the `onClick` function provided by the Board is called. Here is what's happening
+  - 1. Teh `onClick` prop on the build-in DOM `<button>` component tells Rec tto set up an click event listener.
+  - 2. When the button is clicked, React will call the `onClick` event handler that is defined in Square's `render()` method.
+  - 3. This event handler calls `this.props.onClick()`. The Square's `onClick` prope rwas specified by the Board.
+  - 4. Since the Board passed `onClick={() => this.handleClick(i)}` to Square, the Square calls the Board's `handleClick(i)` when clicked.
+  - 5. We have not defined the `handleClick()` method yet, so our code crashes. If you click a square now, you should see a red error screen, saying something like "this.handleClick is not a function"
