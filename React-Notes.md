@@ -267,8 +267,33 @@ renderSquare(i) {
   - Delete the `constructor` from Square because Square no longer keeps track of the game's state.
 
 - When a Square is clicked, the `onClick` function provided by the Board is called. Here is what's happening
-  - 1. Teh `onClick` prop on the build-in DOM `<button>` component tells Rec tto set up an click event listener.
+  - 1. Teh `onClick` prop on the build-in DOM `<button>` component tells React to set up an click event listener.
   - 2. When the button is clicked, React will call the `onClick` event handler that is defined in Square's `render()` method.
-  - 3. This event handler calls `this.props.onClick()`. The Square's `onClick` prope rwas specified by the Board.
+  - 3. This event handler calls `this.props.onClick()`. The Square's `onClick` prop was specified by the Board.
   - 4. Since the Board passed `onClick={() => this.handleClick(i)}` to Square, the Square calls the Board's `handleClick(i)` when clicked.
   - 5. We have not defined the `handleClick()` method yet, so our code crashes. If you click a square now, you should see a red error screen, saying something like "this.handleClick is not a function"
+
+- **NOTE**: The DOM `<button>` element's `onClick` attribute has a special meaning to React because it is a built-in component. For custom components like Square, the naming is up to you.
+- We could give any name to the Squares's `onClick` prop or Boards `handleClick` method, and the code woudl work the asme.
+- In React, it's conventional to use `on[Event]` names for props which represent events and `handle[Event]` for methods which handle the events.
+
+- When we try to click a Square, we should get an error because we haven't defined `handleCLick` yet. Add `handleClick` to the Board Class.
+
+```JAVASCRIPT
+handleClick(i) {
+    const squares = this.state.squares.slice();
+    squares[i] = 'X';
+    this.setState({squares: squares});
+}
+```
+
+- However, now state is stored in the Board component instead of the individual Square components.
+- When the Board's state changes, teh Square components re-render automatically. Keeping the state of all squares in the Board Component will allow it to determine the winner.
+- Since the Square components no longer maintain state, the Sqaure components receive values from the Board component and inform the Board component when they are clicked.
+- In React terms, the Square components are now **controlled components**. The Board has full control over them.
+
+- Note how in `handleClick` we call `.slice()` to create a copy of the `squares` array to modify instead of modifying the existing array.
+
+## Why Immutability is important
+
+-
