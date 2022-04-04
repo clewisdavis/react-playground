@@ -296,4 +296,106 @@ handleClick(i) {
 
 ## Why Immutability is important
 
--
+- In the tutorial, we suggested creating a copy fo the `squares` array using the `slice()` method instead of modifying the existing array.
+- There are generally two approaches to changing data.
+  - First, to mutate teh data by directly changing the data's values.
+  - Second, is to replace the date with a new copy which has the desired changes.
+
+- **Data change with Mutation**
+
+```JAVASCRIPT
+var player = {score: 1, name: 'Jeff'};
+player.score = 2;
+// Now player iis {score: 2, name: 'Jeff'}
+```
+
+- Data Change without Mutation
+
+```JAVASCRIPT
+var player = {score: 1, name: 'Jeff'};
+
+var newPlayer = Object.assign({}, player, {score: 2});
+//Now player is unchanged, but newPlayer is {score: 2, name: 'Jeff'}
+
+// Or if you are using object spread syntax proposal, you can write: 
+// var newPlayer = {...player, score: 2};
+```
+
+- the end result is the same but by not mutating directly, we gain several benefits.
+
+### Complex Features Become Simple
+
+- Immutability makes complex features much easier to implement.
+- Later in this game, we will implement "time travel" for the games history.
+- The ability to undo and redo certain actions is common in apps.
+- Avoiding direct data mutaion lets us keep previous versions of the game history and reuse them later.
+
+### Detecting Changes
+
+- Detecting changes in mutable objects is difficult because they are modified directly.
+- This detection requires teh mutable object to be compared to previous copies of itself and the entire object tree traversed.
+- **Detecting changes in immutable objects is easier.**
+- If the immutable object that is being referenced is differ than the previous one, the object has changed.
+
+### Determining When to Re-Render in React
+
+- The main benefit of immutability is that it hehlps you build pure components in React.
+- Immutable data can easily determine if changes have been made, which helps determine when a component requires re-rendering.
+- For more about [pure components](https://reactjs.org/docs/optimizing-performance.html#examples) and when to use `shouldComponentUpdate()`
+
+## Function Components
+
+- We will now change the Square to be a function component.
+- In React, function components are a simpler way to write components that only contain a `render` method and don't have their own state.
+- Instead of defining a class which extends `React.Component`, we can write a function that takes `props` as input and returns what should be rendered.
+- Function components are less tedious to write than classes, and many components can be expressed this way.
+
+- Update the Square class with this function:
+
+```JAVASCRIPT
+function Square(props) {
+    return(
+        <button 
+            className="square"
+            onClick={props.onClick}
+        >
+            {props.value}
+        </button>
+    );
+}
+```
+
+- We have changed `this.props` to `props` both times it appears.
+
+## Taking Turns
+
+- We now need to fix an obvious defect in our tic-tac-toe game: the O's cannot be marked on the board.
+- We will set the first move to be "X" by default. We can set this default by modifying the initial state in our Board constructor:
+
+```JAVASCRIPT
+class Board extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            squares: Array(9).fill(null),
+            xIsNext: true,
+        }
+    }
+}
+```
+
+- each time a player moves, `xIsNext` (boolean) will be flipped to determine which player goes next and the game's state will be saved.
+- We will update he Board's `handleClick` function to flip the value of `xIsNext`
+
+```JAVASCRIPT
+handleClick(i) {
+    const squares = this.state.squares.slice();
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+        squares: squares,
+        xIsNext: !this.state.xIsNext,
+    })
+}
+```
+
+- With this change, "X"s and "O"s can take turns!
