@@ -399,3 +399,68 @@ handleClick(i) {
 ```
 
 - With this change, "X"s and "O"s can take turns!
+
+- Let's also change the "status" text in Board's `render` so that it displays which player has the next turn:
+
+```JAVASCRIPT
+render() {
+    const status = 'Next Player: ' + (this.state.xIsNext ? 'X' : 'O');
+
+    return(
+        // the rest of the Board's component
+    )
+}
+```
+
+## Declaring a Winner
+
+- Nwo that we show which player turn is next, we should also show when the game is won and there are no more turns to make. Use this helper function and paste end of file.
+
+```JAVASCRIPT
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
+```
+
+- Given an array of 9 squares, this funtion wil check for a winner and return 'X', 'O' or `null` as appropriate.
+
+- We wil call `calculateWinner(squares)` in the Board's `render` function to check if a player has won. If a player has won, e can display text "Winner: X" or "Winner: O".
+- We will replace e the `status` declaration in Board's `render` function with this code.
+
+```JAVASCRIPT
+render() {
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if (winner) {
+        status = 'Winner: ' + winner;
+    } else {
+        status = 'Next player: ' + (this.status.xIsNext ? 'X' : 'O');
+    }
+
+    return (
+        // rest of component code
+    )
+}
+```
+
+- Now we can change the Board's `handleClick` funciton to return early by ignoring a click if someone has won teh game or if a Square is already filled:
+
+```JAVASCRIPT
+
+```
