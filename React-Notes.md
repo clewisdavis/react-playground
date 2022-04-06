@@ -462,5 +462,55 @@ render() {
 - Now we can change the Board's `handleClick` funciton to return early by ignoring a click if someone has won teh game or if a Square is already filled:
 
 ```JAVASCRIPT
-
+handleClick(i) {
+    const squares = this.state.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+        return;
+    }
+    squares[i] = this.state.xUsNext ? 'X' : 'O';
+    this.setState({
+        squares: squares,
+        xUsNex: !this.state.xIsNext,
+    });
+}
 ```
+
+## Adding Time Travel
+
+- Let's make it possible to go back in time to the previous moves in the game.
+
+### Storing the History of Moves
+
+- If we mutated the `squares` array, implementing time travel would be very difficult.
+- However, we used `slice()` to create a new copy of squares array after every move and treated it as immutable.
+- This will allow us to store every past version of the squares array, and navigate between the turns that have already happened.
+
+- First, we will store the past `squares` arrays in another array called `history`. This `history` array represents all the board states, from the first to the last move.
+- And decided which component should own the the `history` state.
+
+### Lifting State Up, Again
+
+- Top level Game component to display a list of past moves. It will need access to the `history` to do that, so we will place the `history` state in the top level Game component.
+
+- Placing the `history` state into the Game component lets us remove the `squares` state from it's child Board component.
+- Just like we lifted state up from the Square component into the Board component, we are now lifting tit up form the Board, into the top level Game component.
+
+- This give the Game component full control over the Board's date, and let's it instruct teh Board to render previous turns from `history`.
+
+- First set upt he initial state for the Game component within its constructor:
+
+```JAVASCRIPT
+class Game extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+          history: [{
+              squares: Array(9).fill(null),
+          }],
+          xIsNext: true,
+      }
+  }
+}
+```
+
+- Next, we wil have the Board component receive `squares` and `onClick` props from the Game component.
