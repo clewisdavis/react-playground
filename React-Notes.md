@@ -513,4 +513,51 @@ class Game extends React.Component {
 }
 ```
 
-- Next, we wil have the Board component receive `squares` and `onClick` props from the Game component.
+- Next, we will have the Board component receive `squares` and `onClick` props from the Game component.
+- Since we now have a single click handler in Board for many Squares, we need to pass the location of each Square into the `onClick` handler to indicate which Square was clicked.
+  - Delete the `constructor` in Board
+  - Replace `this.state.squares[i]` with `this.props.squares[i]` in Board's `renderSquare`
+  - Replace `this.handleClick(i)` with `this.props.onClick(i)` in Board's `renderSquare`
+
+```JAVASCRIPT
+// In the Board Component
+renderSquare(i) {
+    return (
+        <Square
+            value={this.props.squares[i]}
+            onClick={() => this.props.onClick(i)}
+        />
+    )
+}
+```
+
+- We will update the Game components `render` function to use th emost recent history entry to determine and display the game's status:
+
+```JAVASCRIPT
+  render() {
+    const history = this.state.history;    
+    const current = history[history.length - 1];    
+    const winner = calculateWinner(current.squares);    
+    let status;    
+    if (winner) {
+              status = 'Winner: ' + winner;    
+              } else {
+                        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');    
+              }
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board            squares={current.squares}            onClick={(i) => this.handleClick(i)}          />        </div>
+        <div className="game-info">
+          <div>{status}</div>          <ol>{/* TODO */}</ol>
+        </div>
+      </div>
+    );
+  }
+```
+
+- Since hte Game Component is now rendering the game's status, we can remove the corresponding code from the Board's `render` method.
+
+- Finally, we need to move the `handleClick` method from the Board component to the Game component.
+
+-
