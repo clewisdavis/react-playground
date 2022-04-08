@@ -556,8 +556,60 @@ renderSquare(i) {
   }
 ```
 
-- Since hte Game Component is now rendering the game's status, we can remove the corresponding code from the Board's `render` method.
+- Since the Game Component is now rendering the game's status, we can remove the corresponding code from the Board's `render` method.
 
 - Finally, we need to move the `handleClick` method from the Board component to the Game component.
+- We also need to modify `handleClick` because the Game component's state is structured differently.
+- Within the Game's `handleClick` method, we concatenate new history entries onto `history`
 
--
+```JAVASCRIPT
+handleClick(i) {
+    const history = this.state.history;
+    const current = history[history.length -1];
+    const squares = current.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+        return;
+    }
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+        history: history.concat([{
+            squares: squares,
+        }]),
+        xIsNext: !this.state.xIsNext,
+    });
+}
+```
+
+- At this point teh Board component only needs the `renderSquare` and `render` methods. The game's state and the `handleClick` method should be in the Game component.
+
+### Showing the Past Moves
+
+- Since we are recording teh tic-tac-toe game's history, we can now display it toht eplaye ras a list of past moves.
+- We learned earlier that React elements are first class JS objects; we can pass them aroudn in our applications
+- To render multipel items in React, we can use an array of React elements.
+
+- In JS, arrays have a `map()` method commonly used to mapping date to other data, for example
+
+```JAVASCRIPT
+const numbers = [1, 2, 3];
+const doubled = numbers.map(x => x * 2);
+```
+
+- Using the `map` method, we can map our history of moves to React elements representing button on teh scree, and display a list of buttons to jump to past moves.
+
+- Let's `map` over the `history` in teh Game's `render` method:
+
+```JAVASCRIPT
+const moves = history.map((step, move) => {
+    const desc = move ?
+        'Go to move #' + move :
+        'Go to game start';
+    return (
+        <li>
+            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        </li>
+    );
+});
+```
+
+- As we iterate through `history` array,
