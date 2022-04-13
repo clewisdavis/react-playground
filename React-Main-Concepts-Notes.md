@@ -93,4 +93,94 @@ function getGreeting(user) {
 
 ### Specifying Attributes with JSX
 
+- You may use quotes to specify string literals as attributes:
+
+```JAVASCRIPT
+const element = <a href="https://www.reactjs.org"> link </a>;
+```
+
+- You may also use curly braces to embed a JS expressoin in an attribute:
+
+```JAVASCRIPT
+const element = <img src={user.avatarUrl}></img>;
+```
+
+- Don't put quotes aroudn curly braces when embedding a JS expression in an attribute. You should either use quotes (for string values) or curly braces (for expressions), but not both in the same attribute.
+
+- **warning** Since JSX is closer to JS than to HTML and React DOM uses `camelCase` property naming convention instead of HTML attribute names. For example `class` becomes `className` in JSX and `tabindex` becomes `tabIndex`.
+
+### Specifying Children in JSX
+
+- If a tag is empty, you may close it immediately with `/>` like XML:
+
+```JAVASCRIPT
+const element = <img src={user.avatarUrl} />;
+```
+
+- JSX tags may contain children:
+
+```JAVASCRIPT
+const element = (
+  <div>
+    <h1>Hello!</h1>
+    <h2>Good to see you here.</h2>
+  </div>
+);
+```
+
+### JSX Prevents Injection Attacks
+
+- It is sav eto embed user inptu in JSX:
+
+```JAVASCRIPT
+const title = response. potentiallyMaliciousInput;
+//This is save:
+const element = <h1>{title}</h1>;
+```
+
+- By default, React DOM `escapes` any values embedded in JSX before rendering them. This it ensures that you can neve rinject anything that not explicitly written in you app.
+- Everything is converted to a string befor ebeing rendered. This helps prevent XSS cross site scripting attacks.
+
+### JSX Represents Objects
+
+- Babel compiles JSX down to `React.createElement()` calls.
+- These two examples are identical:
+
+```JAVASCRIPT
+const element = (
+    <h1 className="greeting">
+      Hello, world!
+    </h1>
+)
+```
+
+```JAVASCRIPT
+const element = React.createElement(
+    'h1',
+    {className: 'greeting'},
+    'Hello, world!'
+);
+```
+
+- React.createElement() performs a few checks to help you write bug free code but essentially creates an object like this:
+
+```JAVASCRIPT
+// Note: this structure is simplified
+const element = {
+  type: 'h1',
+  props: {
+    className: 'greeting',
+    children: 'Hello, world!'
+  }
+};
+```
+
+- These objects are called "React elements". Youc an think of them as descriptions of what you want to see on the screen.
+- react reads these objects and uses them to construct the DOM and keep it up to date.
+
+- We will explore rendering React elements to the DOM in the next section.
+- **TIP** recommend using the [Babel language definition](https://babeljs.io/docs/en/editors) for your editor
+
+## Rendering Elements
+
 -
