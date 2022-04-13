@@ -27,4 +27,70 @@ React is a JS library, and assume you have some basic understanding of the JS la
 
 ## Intro to JSX
 
+- Consider this variable declaration:
+
+```JAVASCRIPT
+const element = <h1>Hello World!</h1>;
+```
+
+- It is called JSX, and a syntax extension to JS.
+- It's recommneded using in React to describe what the UI should look like.
+- JSX may remind you of a template language, but it comes with the full power of JS.
+
+- JSX produces React elements. Below are the basics of JSX and how to get started.
+
+### Why JSX?
+
+- React embraces the fact rendering logic is inherently coupled with other UI logic: how events are handled, state changes over time and how data is prepared for display.
+- Instead of artificially seperating technologies by putting markup adn logic in seperate files. react
+- React separates concerns with loosely coupled units called "components" that contain both.
+- React doesn't require using JSX, btu most peopel find it helpful as a visual aid hwen wroking tih the UI inside the JS code.
+
+### Embedding Expressions in JSX
+
+- In this example, we declare a variable called `name` and then use it inside JSX by wrapping it in curly braces.
+
+```JAVASCRIPT
+const name = 'Josh Perez';
+const element = <h1>Hello, {name}</h1>;
+```
+
+- You can put any valid JS expression inside the curly braces in JSX.
+- For example, `2 + 2`, or `formatName(user)` are al valid JS expressions.
+
+- In the example below, we embed the result of callign a JS function, `formatName(user)` into an `<h1>` element.
+  
+```JAVASCRIPT
+funciton formatName(user) {
+    return user.firstName + ' ' + user.lastName;
+}
+
+const user = {
+    firstName: 'Harper',
+    lastName: 'Perez'
+};
+
+const element = (
+    <h1>
+      Hello, {formatName(user)}!
+    </h1>
+)
+```
+
+### JSX is an Expression Too
+
+- After compilation, JSX expressions become regular JS function calls and evaluate to JS objects.
+- This mean you can use JSX inside of `if` statment and `for` loops, assign it to variables, accept as arguments and return it from functions:
+
+```JAVASCRIPT
+function getGreeting(user) {
+    if (user) {
+        return <h1>Hello, {formatName(user)}!</h1>;
+    }
+    return <h1>Hello, stranger.</h1>
+}
+```
+
+### Specifying Attributes with JSX
+
 -
