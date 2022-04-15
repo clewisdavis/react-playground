@@ -244,3 +244,61 @@ setInterval(tick, 1000);
 - Even though we create an element describing the whole UI tree on every tick, only the text node whose contents hae changed gets updated by React DOM.
 
 - In our experience, thinking about how the UI should look at any given moment, rather than how to change it over time, eliminates a whole class of bugs.
+
+## Components and Props
+
+- Components let you split the UI into independent, reusable pieces, and think about each piece in isolation.
+- **Conceptually, components are like JS functions.** They accept arbitrary inputs (called props) and return React elements describing what should appear on the screen.
+
+### Function and Class Components
+
+- The simplest way to define a component is to write a JS function:
+
+```JAVASCRIPT
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+```
+
+- This function si a valid React component because it accepts a single prop (short for properties) object argument with data and returns a React element.
+- We call such components "function components" because they are literally JS functions.
+
+- You can also use an ES6 class to define a component:
+
+```JAVASCRIPT
+class Welcome extends React.Component {
+  render() {
+    return <h1>Hello, {this.props.name}</h1>;
+  }
+}
+```
+
+- The above examples are equivalent in React's point of view.
+- Function and Class components both have some additional features that we wil discuss in the future sections.
+
+### Rendering a Component
+
+- Previously, we only encountered React elements that represent DOM tags:
+
+```JAVASCRIPT
+const element = <div />;
+```
+
+- However, elements can also represent user-defined components:
+
+```JAVASCRIPT
+const element = <Welcome name="Sara" />;
+```
+
+- When React sees an element representing a user-defined component, it passes JSX attributes and children to this component as a single object. We call this object "props".
+- For example; this code renders "Hello, Sara" on the page:
+
+```JAVASCRIPT
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+
+const element = <Welcome name="Sara" />;
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(element);
+```
