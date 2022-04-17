@@ -302,3 +302,38 @@ const element = <Welcome name="Sara" />;
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(element);
 ```
+
+- Recap of what's going on in this example:
+
+1. We call `root.render()` with the `<Welcome name="Sara" />` element.
+2. React calls the `Welcome` component with `{name: 'Sara'}` as the props.
+3. Our `Welcome` component returns a `<h1>Hello, Sare<h1>` element as the result.
+4. react DOM efficiently updates the DOM to match `<h1>Hello, Sara</h1>`
+
+- **NOTE: Always start component names with a capital letter.**
+
+### Composing Components
+
+- Components can refer to other components in their output. This lets us us the same component abstraction for any level of detail. A button, form, dialog a screen: in React apps, all those are commonly expressed as components.
+
+- For example we can create an `App` component that renders `Welcome` many times:
+
+```JAVASCRIPT
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+
+function App() {
+  return (
+    <div>
+      <Welcome name="Audrey" />
+      <Welcome name="Alex" />
+      <Welcome name="Arden" />
+    </div>
+  )
+}
+```
+
+- Typically, new React apps have a single `App` component at the very top. However, if you integrate React into an existing app, you might start bottom up with a small component like `Button` and gradually work your way to the top of the view hierarchy.
+
+### Extracting Components
