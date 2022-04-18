@@ -337,3 +337,113 @@ function App() {
 - Typically, new React apps have a single `App` component at the very top. However, if you integrate React into an existing app, you might start bottom up with a small component like `Button` and gradually work your way to the top of the view hierarchy.
 
 ### Extracting Components
+
+- Don't be afraid to split components into smaller components.
+- For example, thsi `Comment` component:
+
+```JAVASCRIPT
+function Comment(props) {
+  return (
+    <div className="Comment">
+      <div className="UserInfo">
+       <img className="Avatar"
+        src={props.author.avatarUrl}
+        alt={props.author.name}
+       />
+       <div className+"UserInfo-name">
+        {props.author.name}
+       </div>
+      </div>
+      <div className="Comment-text">
+        {props.text}
+      </div>
+      <div className="Comment-date">
+        {formatDate(props.date)}
+      </div>
+    </div>
+  );
+}
+```
+
+- It accepts `author` (an object), `text` (a string), and `date` (a date) as props, and describes a comment on a social media website.
+- This component can be tricky to change because of all the nesting, and it is also hard to reuse individual parts of it. We can extract a few components from it.
+
+- First we extract `Avatar`:
+
+```JAVASCRIPT
+function Avatar(props) {
+  return (
+    <img className="Avatar"
+      src={props.user.avatarUrl}
+      alt={props.user.name}
+    />
+  );
+}
+```
+
+- The `Avatar` doesn't need to knwo that is is being rendered inside a `Comment`. This is why we have given its prop a more generic name: `user` rather than `author`.
+
+- **We recommend naming props from the components own point of view rather than the context in which it is being used.**
+
+- Now we can simplify `Comment` a tiny bit:
+
+```JAVASCRIPT
+function Comment(props) {
+  return (
+    <div className="Comment">
+      <div className="UserInfo">
+       <Avatar user={props.author} />
+       <div className+"UserInfo-name">
+        {props.author.name}
+       </div>
+      </div>
+      <div className="Comment-text">
+        {props.text}
+      </div>
+      <div className="Comment-date">
+        {formatDate(props.date)}
+      </div>
+    </div>
+  );
+}
+```
+
+- Next we wil extract a `UserInto` component that renders an `Avatar` next to the user's name:
+
+```JAVASCRIPT
+function UserInfo(props) {
+  return (
+    <div className="UserInfo">
+      <Avatar user={props.user} />
+      <div className="UserInfo-name">
+        {props.user.name}
+      </div>
+    </div>
+  );
+}
+```
+
+- This lets us simplify `Comment` even further:
+
+```JAVASCRIPT
+function Comment(props) {
+  return (
+    <div className="Comment">
+      <UserInfo user={props.author} />
+      <div className="Comment-text">
+        {props.text}
+      </div>
+      <div className="Comment-date">
+        {formatDate(props.date)}
+      </div>
+    </div>
+  );
+}
+```
+
+- Extracting components might seem like grunt work at first, but having a palette of reusable components pays off in larger apps.
+- A good rule of thumb is that is a part of your UI is used several times (`Button`, `Panel`, `Avatar`), or is complex enough on it's own (`App`, `FeedStory`, `Comment`) it is a good candidate to be extracted to separate component.
+
+## Props are Read-Only
+
+-
