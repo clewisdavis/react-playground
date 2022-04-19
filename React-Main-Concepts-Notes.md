@@ -446,4 +446,206 @@ function Comment(props) {
 
 ## Props are Read-Only
 
+- Whether you declare a component as a function or a class, it must never modify it's own props. Consider this `sum` function:
+
+```JAVASCRIPT
+function sum(a, b) {
+  return a + b;
+}
+```
+
+- Such functions are called "pure" because they do not attempt to change their inputs, and always return the same result from the same inputs.
+
+- In contrast, this function is impure because it changes its own input:
+
+```JAVASCRIPT
+function withdraw(account, amount) {
+  account.total -= amount;
+}
+```
+
+- React is pretty flexible but it has a single strict rule.
+
+- **All React components must act like pure function with respect to their props.**
+
+- Of course, application UIs are dynamic and change over time. In the next section we will introduce the new concept of state.
+- State allows React components to change their output over time in response to the users actions, network responses, and anything else, without violating this rule.
+
+## State and Lifecycle
+
+- This section introduces the concept of state and lifecycle in a React component.
+- You can find a [detailed API reference here](https://reactjs.org/docs/react-component.html)
+
+- Consider the ticking clock example from one of the [previous sections](https://reactjs.org/docs/rendering-elements.html#updating-the-rendered-element).
+- In Rendering Elements, we have only learned one way to update the UI.
+- We call `root.render()` to change the rendered output:
+
+```JAVASCRIPT
+const root = ReactDOM.createRoot(document.getElementByID('root'));
+
+function tick() {
+  const element = (
+    <div>
+      <h1>hello, world!</h1>
+      <h2>It is {new Date().toLocaleTimeString()}.</h2>
+    </div>
+  );
+  root.render(element);
+}
+
+setInterval(tick, 1000);
+```
+
+- [CodePen Reference](https://codepen.io/gaearon/pen/gwoJeZ?editors=0010)
+
+- In this section, we will learn hwo to make the `Clock` component truly reusable and encapsulated. It will set up it's own timer and update itself every second.
+
+- We can start by encapsulating how the clock looks:
+
+```JAVASCRIPT
+const root = ReactDOM.createRoot(document.getElementByID('root'));
+
+function Clock(props) {
+  return (
+    <div>
+      <h1>hello, world!</h1>
+      <h2>It is {new Date().toLocaleTimeString()}.</h2>
+    </div>
+  );
+}
+
+function tick() {
+  root.render(<Clock date={new Date()} />);
+}
+
+setInterval(tick, 1000);
+```
+
+- However, it misses a crucial requirement: the fact that the `Clock` sets up a timer and updates the UI every second should be an implementation detail of the `Clock`.
+
+- Ideally we want to write this once and have th `Clock` update itself:
+
+```JAVASCRIPT
+root.render(<Clock />);
+```
+
+- To implement this, we need to add "state" tot he `Clock` component.
+
+- State is similar to props, btu it is private and fully controlled by the component.
+
+## Converting a Function to a Class
+
+- You can convert a function component like `Clock` to a class in five steps:
+
+1. Create an [ES6 class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes), with the same name, that extends `React.Component`
+2. Add a single empty method to it called `render()`.
+3. Move the body of the function into the `render()` method.
+4. Replace `props` with `this.props` in the `render()` body.
+5. Delete the remaining empty function declaration.
+
+```JAVASCRIPT
+class Clock extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>hello, world!</h1>
+        <h2>It is {this.props.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+```
+
+- [CodePen](https://codepen.io/gaearon/pen/zKRGpo?editors=0010)
+
+- `Clock` isi now defined as a class rather than a function.
+
+- The `render` method will be called each time an update happens, but as long as we render `<Clock />` into the asme DOM node, only a single instance of the `Clock` class will be used. This lets us use additional features such as local state and lifecycle methods.
+
+## Adding Local State to a Class
+
+- We will move the `date` form props to state in three steps:
+
+1. Replace `this.props.date` with `this.state.date` in teh `render()` method:
+
+```JAVASCRIPT
+class Clock extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>hello, world</h1>
+        <h2>it is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+```
+
+2. Add a [class constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#constructor) that assigns the initial `this.state`:
+
+```JAVASCRIPT
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>hello, world</h1>
+        <h2>it is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+```
+
+- Note how we pass `props` to the base constructor:
+
+```JAVASCRIPT
+constructor(props) {
+  super(props);
+  this.state = {date: new Date()};
+}
+```
+
+- Class components should always call the base constructor with `props`.
+
+3. Remove the `date` prop from the `<Clock />` element:
+
+```JAVASCRIPT
+root.render(<Clock />);
+```
+
+- We will add teh timer code back to the component itself.
+- The result looks like this:
+
+```JAVASCRIPT
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>hello, world</h1>
+        <h2>it is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Clock />);
+```
+
+- [CodePen](https://codepen.io/gaearon/pen/KgQpJd?editors=0010)
+
+- Next, we will make the `Clock` set up its own timer and update itself every second.
+
+## Adding Lifecycle Methods to a Class
+
 -
