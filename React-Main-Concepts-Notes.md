@@ -766,3 +766,143 @@ root.render(<Clock />);
 ## Using State Correctly
 
 - There are three things you should know about `setState()`.
+
+### Do not modify state directly
+
+- For example, this will not re-render a component:
+
+```JAVASCRIPT
+// Wrong
+this.state.comment = 'Hello';
+```
+
+- Instead, use `setState()`:
+
+```JAVASCRIPT
+this.setState({comment: 'Hello'});
+```
+
+- The only place where you can assign `this.state` is the constructor.
+
+### State Updates May be Asynchronous
+
+- React may batch multiple `setState()` calls into a single update for performance.
+- because `this.props` and `this.state` may be updated asynchronously, you shoudl not rely on their values for calculating the next state.
+
+- For example, this code may fail to update teh counter:
+
+```JAVASCRIPT
+// Wrong
+this.setState({
+  counter: this.state.counter + this.props.increment,
+})
+```
+
+- To fix it, use a second form of `setState()` that accepts a **function rather than an object**.
+- That function will receive the previous state as the first argument, and the props at the time the update is applied as the second argument:
+
+```JAVASCRIPT
+// Correct, arrow function
+this.setState((state, props) => ({
+  counter: state.counter + props.increment
+}));
+```
+
+- We use an arrow function, but it also works with regular functions:
+
+```JAVASCRIPT
+// Correct, regular function
+this.setState(function(state, props) {
+  return {
+    counter: state.counter + props.increment
+  };
+});
+```
+
+### State Updates are Merged
+
+- When you call `setState()`, React merges the object you provide into the current state.
+
+- For example, your state may contain several independent variables:
+
+```JAVASCRIPT
+constructor(props) {
+  super(props);
+  this.state = {
+    posts: [],
+    comments: []
+  }
+}
+```
+
+- Then you can update them independently with separate `setState()` calls:
+
+```JAVASCRIPT
+componentDidMount() {
+  fetchPosts().then(response => {
+    this.setState({
+      posts: response.posts
+    });
+  });
+
+  fetchComments().then(response => {
+    this.setState({
+      comments: response.comments
+    })
+  })
+}
+```
+
+- The merging is shallow, so `this.setState({comments})` leaves `this.state.posts` intact, but completely replaces `this.state.comments`.
+
+### The Date Flows Down
+
+- Neither parent nor child components can know if a certain component is stateful or stateless, and they shouldn't care whether it is defined as a function or a class.
+
+- This is why state is often called local or encapsulated. It is not accessible to any component other than the one that owns and sets it.
+
+- A component may choose to pass its state down as props to its child components:
+
+```JAVASCRIPT
+<FormattedDate date={this.state.date} />
+```
+
+- The `FormattedDate` component would receive teh `date` in its props and wouldn't know whether it came from the `Clock`'s state, form the `Clock`'s props, or typed by hand:
+
+```JAVASCRIPT
+function FormattedDate(props) {
+  return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+}
+```
+
+- Check out the [CodePen](https://codepen.io/gaearon/pen/zKRqNB?editors=0010)
+
+- This is commonly called a "top-down" or "unidirectional" data flow.
+- Any state is always owned by some specific component, and any date or UI derived from that state can only affect components "below" them in the tree.
+
+- If you imagine a component tree as a **waterfall of props**, each component's state is like an additional water source that joins it at an arbitrary point but also flows down.
+
+- To show that all components are truly isolated, we can create an `App` component that renders three `<Clock>`'s:
+
+```JAVASCRIPT
+function App() {
+  return {
+    <div>
+      <Clock />
+      <Clock />
+      <Clock />
+    </div>
+  }
+}
+```
+
+- Try on [CodePen](https://codepen.io/gaearon/pen/vXdGmd?editors=0010)
+
+- Each `Clock` sets up its own timer and updates independently.
+
+- In React apps, whether a component is stateful or stateless is considered an implementation detail of the component that may change over time.
+- You can use stateless components inside stateful components, and vice versa.
+
+## Handling Events
+
+-
