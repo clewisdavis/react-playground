@@ -908,7 +908,7 @@ function App() {
 - Handling events with react elements is very similar to handling events on DOM elements. There are some syntax differences:
 
   - React events are named using cameCase, rather than lowercase.
-  - Wish JSX you pass a function as teh event handler, rather than a string.
+  - With JSX you pass a function as the event handler, rather than a string.
 
 - For example, the HTML:
 
@@ -921,7 +921,7 @@ function App() {
 - is slightly differ in React:
 
 ```JAVASCRIPT
-<button> onClick={activateLasers}>
+<button onClick={activateLasers}>
   Activate Lasers
 </button>
 ```
@@ -1065,4 +1065,23 @@ class LoggingButton extends React.Component {
 
 ## Conditional Rendering
 
--
+- In React, you can create distinct component that encapsulate behavior you need. Then you can render only some of them, depending on the state of your app.
+
+- **Conditional rendering in React works teh same way conditions work in JS.**
+- Use JS operator like [if](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else) or the [conditional operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator) to create elements representing the current state, and let React update the UI to match them.
+
+- Consider these two components:
+
+```JAVASCRIPT
+function UserGreeting(props) {
+  return (
+    <h1>Welcome Back</h1>
+  )
+}
+
+function GuestGreeting(props) {
+  return (
+    <h1>Please sign up.</h1>
+  )
+}
+```
