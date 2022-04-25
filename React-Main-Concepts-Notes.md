@@ -1067,7 +1067,7 @@ class LoggingButton extends React.Component {
 
 - In React, you can create distinct component that encapsulate behavior you need. Then you can render only some of them, depending on the state of your app.
 
-- **Conditional rendering in React works teh same way conditions work in JS.**
+- **Conditional rendering in React works the same way conditions work in JS.**
 - Use JS operator like [if](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else) or the [conditional operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator) to create elements representing the current state, and let React update the UI to match them.
 
 - Consider these two components:
@@ -1085,3 +1085,28 @@ function GuestGreeting(props) {
   )
 }
 ```
+
+- We will create a `Greeting` component that displays either of these components depending on whether a user is logged in:
+
+```JAVASCRIPT
+function Greeting(props) {
+  const isLoggedIn = props.isLoggedIn;
+  if (isLoggedIn) {
+    return <UserGreeting />;
+  }
+  return <GuestGreeting />;
+}
+
+ReactDOM.render(
+  // Try changing to isLoggedIn={true};
+  <Greeting isLoggedIn={false} />
+  document.getElementById('root')
+)
+```
+
+- Try on [CodePen](https://codepen.io/gaearon/pen/edbMaP?editors=0011)
+- This example renders a different greeting depending on the value of `isLoggedIn` prop.
+
+### Element Variables
+
+-
