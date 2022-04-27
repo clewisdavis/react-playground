@@ -1182,4 +1182,85 @@ ReactDOM.renter(
 
 ### Inline If with Logical && Operator
 
--
+- You may embed expression in JSX by wrapping them in curly braces.
+This includes the JS logical `&&` [operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Logical_AND). It can be hand for conditionally including an element:
+
+```JAVASCRIPT
+funciton Mailbox(props) {
+  const unreadMessages = props.unreadMessages;
+  return (
+    <div>
+      <h1>Hello</h1>
+      {unreadMessages.length > 0 &&
+        <h2>
+          You have {unreadMessages.length} unread messages.
+        </h2>
+      }
+    </div>
+  );
+}
+
+const messages = ['React', 'Re: react', 'Re:Re: React'];
+ReactDOM.render(
+  <Mailbox unreadMessages={messages} />,
+  document.getElementById('root');
+);
+```
+
+- Try it on [CodePen](https://codepen.io/gaearon/pen/ozJddz?editors=0010)
+
+- It works because in JS, `true && expression` always evaluates to `expression`, and `false && expression` always evaluates to `false`.
+
+- Therefore, if the condition is `true`, the element right after `&&` will appear in the output. If it is `false`, React will skip it.
+
+- Note that returning a falsy expression wil still cause the element after `&&` to be skipped but will return the falsy expression.
+- In the example below, `<div>0</div>` will be returned by the render method.
+
+```JAVASCRIPT
+render() {
+  const count = 0;
+  return (
+    <div>
+      {count && <h1>Messages: {count}</h1>}
+    </div>
+  )
+}
+```
+
+### Inline If-Else with Conditional Operator
+
+- Another method for conditionally rendering elements inline is to use the JS conditional operator [condition ? true : false](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator).
+
+- In the example below, we use it to conditionally render a small block of text.
+
+```JAVASCRIPT
+render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    <div>
+      The user is <b>{isLoggedIn ? 'currently' : 'not'}</b> logged in.
+    </div>
+  )
+}
+```
+
+It can also be used for larger expressions although it is less obvious what's going on:
+
+```JAVASCRIPT
+render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    <div>
+      {isLoggedIn
+        ? <LogoutButton onClick={this.handleLogoutClick} />
+        : <LoginButton onClick={this.handleLoginClick} />
+      }
+    </div>
+  )
+}
+```
+
+- Just like in JS, it is up to you to choose an appropriate style based on waht you and your team consider more readable.
+- **Also remember that whenever conditions become too complex**, it might be a good time to [extract a component](https://reactjs.org/docs/components-and-props.html#extracting-components).
+
+### Preventing Component from Rendering
