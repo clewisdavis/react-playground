@@ -1264,3 +1264,74 @@ render() {
 - **Also remember that whenever conditions become too complex**, it might be a good time to [extract a component](https://reactjs.org/docs/components-and-props.html#extracting-components).
 
 ### Preventing Component from Rendering
+
+- In rare cases yo might want a component to hide itself even though it was rendered by another component. To do this return `null` instead of it's render output.
+
+- Example, the `WarningBanner />` is rendered depending on teh value of the prop called `warn`. If the value of the prop is `false`, then the component does not render:
+
+```JAVASCRIPT
+function WarningBanner(props) {
+  if (!props.warn) {
+    return null;
+  }
+
+  return (
+    <div className="warning">
+      Warning!
+    </div>
+  );
+}
+
+class Page extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {showWarning: true};
+    this.handleToggleClick = this.handleToggleClick.bind(this);
+  }
+
+  handleToggleClick() {
+    this.setState(state => ({
+      showWarning: !state.showWarning
+    }));
+  }
+
+  render() {
+    return (
+      <div>
+        <WarningBanner war={this.state.showWarning} />
+        <button onClick={this.handleToggleClick}>
+          {this.state.showWarning ? 'Hide' : 'Show'}
+        </button>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <Page />
+  document.getElementById('root')
+);
+```
+
+- Try on [CodePen](https://codepen.io/gaearon/pen/Xjoqwm?editors=0010)
+
+- Turning `null` from a components `render` method deos not affect the firing of the component's lifecycle methods. For instance `componentDidUpdate` will still be called.
+
+## Lists and Keys
+
+- First, let's review how you transform lists in JS.
+
+- Given the code below, we use the [map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) function to take an array of `numbers` and double their values. We assign the new array returned by `map()` to the variable `doubled` and log it:
+
+```JAVASCRIPT
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map((number) => number * 2);
+console.log(doubled);
+```
+
+- Ths code logs `[2, 4, 6, 8, 10]` to the console.
+- In React, transforming arrays into lists of [elements](https://reactjs.org/docs/rendering-elements.html) is nearly identical.
+
+### Rendering Multiple Components
+
+-
