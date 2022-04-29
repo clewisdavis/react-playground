@@ -1334,4 +1334,121 @@ console.log(doubled);
 
 ### Rendering Multiple Components
 
--
+- You can build collections of elements and include them in JSX using curly braces `{}`.
+
+- Below, we loop through the `numbers` array using the JS `map()` function. We return a `<li>` for each item. Finaly, we assign the resulting array of elements to `listItems`
+
+```JAVASCRIPT
+const numbers = [1, 2, 3, 4, 5];
+const listItems = numbers.map((number) => 
+  <li>{number}</li>
+);
+```
+
+- Then, we can include the entire `listItems` array inside a `<ul>` element:
+
+```JAVASCRIPT
+<ul>{listItems}</ul>
+```
+
+- Try on [CodePen](https://codepen.io/gaearon/pen/GjPyQM?editors=0011)
+
+- This code displays a bullet list of numbers between 1 and 5.
+
+### Basic List Component
+
+- Usually you would render lists inside a component.
+
+- We can refactor the previous example into a component that accepts an array of `numbers` and outputs a list of elements.
+
+```JAVASCRIPT
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    <li>{number}</li>
+  );
+  return (
+    <ul>{listItems}</ul>
+  );
+}
+
+const numbers = [1, 2, 3, 4, 5];
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <NumberList numbers={numbers} />
+);
+```
+
+- When you run this code, you will be given a warning that a key should be provided for list items.
+- A "key" is a special string attribute you need to include when creating lists of elements. We will discuss why it's important int he next section.
+
+- Let's assign a `key` to our list items inside `numbers.map()` and fix the missing key issue.
+
+```JAVASCRIPT
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    <li key={number.toString()}>
+      {number}
+    </li>
+  );
+  return (
+    <ul>{listItems}</ul>
+  );
+}
+
+const numbers = [1, 2, 3, 4, 5];
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <NumberList numbers={numbers} />
+);
+```
+
+- Try it on [CodePen](https://codepen.io/gaearon/pen/jMXYRR?editors=0011)
+
+### Keys
+
+- Keys help React identify which items have changed, are added, or are removed.
+- Keys should be given to the elements inside the array to give the elements a stable identity:
+
+```JAVASCRIPT
+const numbers = [1, 2, 3, 4, 5];
+const listITems = numbers.map((number) =>
+  <li key={number.toString()}>
+    {number}
+  </li>
+);
+```
+
+- The best way to pick a key is to use a string that uniquely identifies a list item amoung its siblings. Most often you would use IDs from your data as keys:
+
+```JAVASCRIPT
+const todoItems = todos.map((todo) =>
+ <li key={todo.id}>
+   {todo.text}
+ <li>
+)
+```
+
+- When you don't have stable IDs for rendered items, you may use the item index as a key as a last resort:
+
+```JAVASCRIPT
+const todoItems = todos.map((todo, index) =>
+// Ony do this if items have no stable IDs
+ <li key={index}>
+   {todo.text}
+ <li>
+)
+```
+
+- We don't recommend using indexes for keys if the order of items may change.
+- This can negatively impact performance and may cause issues with component state.
+- Check out Pokorny's article for an [in-depth explanation](https://robinpokorny.medium.com/index-as-a-key-is-an-anti-pattern-e0349aece318) on the negative impact of using an index as a key.
+
+- Also, an [in-depth explanation](https://reactjs.org/docs/reconciliation.html#recursing-on-children) about why keys are necessary if you are intersted in learning more.
+
+### Extracting Components with Keys
+
+- Keys only make sense in the context of the surrounding array.
