@@ -1452,3 +1452,123 @@ const todoItems = todos.map((todo, index) =>
 ### Extracting Components with Keys
 
 - Keys only make sense in the context of the surrounding array.
+
+- For example, if you extract a `ListItem` component, you should keep the key on the `<ListItem />` elements in the array rather than on the `<li>` element in the `ListItem` itself.
+
+- Example: Incorrect Key Usage
+
+```JAVASCRIPT
+function ListItem(props) {
+  const value = props.value;
+  return (
+    // Wrong, There is no need to specify the key here:
+    <li key={value.toString()}>
+      {value}
+    </li>
+  );
+}
+
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    // Wrong, the key should have been specified here:
+    <ListItem value={number} />
+  );
+  return (
+    <ul>
+      {listItems}
+    </ul>
+  );
+}
+```
+
+- Example: Correct Key Usage
+
+```JAVASCRIPT
+function ListItem(props) {
+  const value = props.value;
+  return (
+    // Correct, There is no need to specify the key here:
+    <li>
+      {props.value}
+    </li>
+  );
+}
+
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    // Correct, Key should be specified inside the array.
+    <ListItem key={number.toString()} value={number} />
+  );
+  return (
+    <ul>
+      {listItems}
+    </ul>
+  );
+}
+```
+
+- Try it on [CodePen](https://codepen.io/gaearon/pen/ZXeOGM?editors=0010)
+
+- **A good rule of thumb is that elements inside the `map()` call needs keys.**
+
+## Keys Must Only Be Unique Among Siblings
+
+- Keys used within arrays should be unique among their siblings. However, they don't need to be globally unique. We can use the same keys when we produce two different arrays:
+
+```JAVASCRIPT
+function Blog(props) {
+  const sidebar = (
+    <ul>
+      {props.posts.map((post) =>
+        <li key={post.id}>
+          {post.title}
+        </li>
+      )}
+    </ul>
+  );
+  const content = props.posts.map((post) =>
+    <div key={post.id}>
+      <h3>{post.title}</h3>
+      <p>{post.title}</p>
+    </div>
+  );
+  return (
+    <div>
+      {sidebar}
+        <hr/>
+      {content}
+    </div>
+  );
+}
+
+const posts = [
+  {id: 1, title: 'Hello World', content: 'Welcome to learning React!'},
+  {id: 2, title: 'Installation', content: 'You can install React from npm.'}
+];
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Blog posts={posts} />);
+```
+
+- Try on [CodePen](https://codepen.io/gaearon/pen/NReYGN?editors=0010)
+
+- Keys serve as a hint to React but they dont' get passed to your components.
+- If you need the same value in your component, pass it explicitly as a prop with a different name:
+
+```JAVASCRIPT
+const content = posts.map((post) =>
+  <Post
+    key={post.id}
+    id={post.id}
+    title={post.title}
+  />
+);
+```
+
+- With the example above, the `Post` component can read `props.id`, but not `props.key`.
+
+### Embedding map() in JSX
+
+- In the examples above we declared a separate `listItems` variable and included it in JSX:
