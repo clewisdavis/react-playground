@@ -1572,3 +1572,61 @@ const content = posts.map((post) =>
 ### Embedding map() in JSX
 
 - In the examples above we declared a separate `listItems` variable and included it in JSX:
+
+```JAVASCRIPT
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+  <ListItem key={number.toString()}
+            value={number} />
+  );
+  return (
+    <ul>
+      {listItems}
+    </ul>
+  );
+}
+```
+
+- JSX allow [embedding any expression](https://reactjs.org/docs/introducing-jsx.html#embedding-expressions-in-jsx) in curly braces so we could inline the `map()` result:
+
+```JAVASCRIPT
+function NumberList(props) {
+  const numbers = props.numbers;
+  return (
+    <ul>
+      {numbers.map((number) =>
+        <ListItems key={number.toString()} 
+                   value={number} />
+      )}
+    </ul>
+  );
+}
+```
+
+- Try it on [CodePen](https://codepen.io/gaearon/pen/BLvYMB?editors=0010)
+
+- Sometimes this results in clearer code, but this style can also be abused.
+- Like in JS, it is up to you to decide whether it is worth extracting a variable for readability.
+- Keep in mind that if the `map()` body is too nested, it might be a good time to [extract a component](https://reactjs.org/docs/components-and-props.html#extracting-components).
+
+## Forms
+
+- HTML form elements work a bit differently from other DOM elements in React, because form elements naturally keep some internal state. For example, this form in plain HTL accepts a single name:
+
+```JAVASCRIPT
+<form>
+  <label>
+    Name:
+    <input type="text" name="name" />
+  </label>
+  <input type="submit" value="Submit" />
+</form>
+```
+
+- This form has the default HTML form behavior of browsing to a new page when the user submits the form.
+- If you want this behavior in React, it just works.
+- But in most cases, it's convenient to have a JS function that handles the submission of the form and has access to the data that the user entered into the form.
+- The standard way to achieve this is with a technique called "controlled components".
+
+### Controlled Components
