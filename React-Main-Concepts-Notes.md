@@ -1683,3 +1683,113 @@ class NameForm extends React.Component {
 ### The textarea Tag
 
 - In HTML, a `<textarea>` element defines its text by tis children:
+
+```HTML
+<textarea>
+  Hello there, this is the text area.
+</textarea>
+```
+
+- In React, a `<textarea>` uses a `<value>` attribute instead. this way, a form using a `<textarea>` can be written very similarly to a form that uses a single line input:
+
+```JAVASCRIPT
+class EssayForm extends React.Component {
+  constructor(props) {
+    super(super);
+    this.state = {
+      value: 'Please write an essay about your favorite DOM element.'
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event:target.value});
+  }
+
+  handleSUbmit(event) {
+    alert('An essay was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Essay:
+          <textarea value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    )
+  }
+}
+```
+
+- Notice that `this.state.value` is initialized in the constructor, sot hat the text area starts off with some text in it.
+
+### The select Tag
+
+- In HTML, `<select>` creates a drop-down list. For example, this HTML creates a drop down list of flavors:
+
+```HTML
+<select>
+  <option value="grapefruit">Grapefruit</option>
+  <option value="lime">Lime</option>
+  <option selected value="coconut">Coconut</option>
+  <option value="mango">Mango</option>
+</select>
+```
+
+- Note that the Coconut option is initially selected, because of the `selected` attribute.
+- React, instead of using the `selected` attribute, uses a `value` attribute on the root `select` tag.
+- This is more convenient in a controlled component because you only need to udpate it in one place. For example:
+
+```JAVASCRIPT
+class FlavorForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {value: 'coconut'};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('Your favorite flavor is: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  render() {
+    render (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Pick your favorite flavor:
+          <select value={this.state.value} onChange={this.handleChange}>
+            <option value="grapefruit">Grapefruit</option>
+            <option value="lime">Lime</option>
+            <option value="coconut">Coconut</option>
+            <option value="mango">Mango</option>
+          </select>
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    )
+  }
+}
+```
+
+- Try it on [CodePen](https://codepen.io/gaearon/pen/JbbEzX?editors=0010)
+
+- Overall, this makes it sot hat `<input type="text">`, `<textarea>`, and `<select>` all work very similarly = they all accept a `value` attribute tha tyou can use to implement a controlled component.
+
+- NOTE: You can pass an array into the `value` attribute, allowing you to select multiple options in a `select` tag:
+
+```JAVASCRIPT
+  <select multiple={true} value={['B', 'C']}>
+```
