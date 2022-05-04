@@ -1793,3 +1793,116 @@ class FlavorForm extends React.Component {
 ```JAVASCRIPT
   <select multiple={true} value={['B', 'C']}>
 ```
+
+### The file input tag
+
+- In HTML, an `<input type="file">` lets teh user choose one or more files from their device storage to be upladed to a server or manipulated by JS via the File API
+
+```HTML
+  <input type="file" />
+```
+
+- Because its value is read-only, it is an **uncontrolled** component in React. It is discussed together with other uncontrolled components [later in the docs](https://reactjs.org/docs/uncontrolled-components.html#the-file-input-tag).
+
+### Handling Multiple Inputs
+
+- When you need to handle multiple controlled `input` elements, you can add a `name` attribute to each element and let the handler function choose what to do based on the value of `event.target.name`.
+
+- For example:
+
+```JAVASCRIPT
+class Reservation extends React.Components {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isGoing: true,
+      numberOfGuests: 2
+    };
+
+    this.handleInputChange = this.handleInputChange.bind(this);
+  }
+
+  handleInputChange(event) {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  render() {
+    return (
+      <form>
+        <label>
+          Is going:
+          <input
+            name="isGoing"
+            type="checkbox"
+            checked={this.state.isGoing}
+            onChange={this.handleInputChange}
+          />
+        </label>
+        <br />
+        <label>
+          Number of guests:
+          <input 
+            name="numberOfGuests"
+            type="number"
+            value={this.state.numberOfGuests}
+            onChange={this.handleInputChange}
+          />
+        </label>
+      </form>
+    )
+  }
+}
+```
+
+- Try on [CodePen](https://codepen.io/gaearon/pen/wgedvV?editors=0010)
+
+- Note hwo we used the [ES6 computed propert](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#computed_property_names)y name syntax to update the state key corresponding to the given input name:
+
+```JAVASCRIPT
+this.setState({
+  [name]: value
+});
+```
+
+- It is equivalent to this ES5 code:
+
+```JAVASCRIPT
+  var partialState = {};
+  partialState[name] = value;
+  this.setState(partialState);
+```
+
+- Also, since `setState()` automatically [merges a partial state into the current state](https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged), we only needed to call it with the changed parts.
+
+### Controlled Input Null Value
+
+- Specifying the `value` prop on a controlled component prevents the user from changing the input unless you desire so.
+- If you've specified a `value` but the input is still editable, you may have accidentally set `value` to `undefined` or `null`.
+
+- The following code demonstrates this. (The inptu is locked at first but becomes editable after a short delay.)
+
+```JAVASCRIPT
+ReactDOM.createRoot(mountNode).render(<input value="hi" />);
+
+setTimeout(function() {
+  ReactDOM.createRoot(mountNode.render(<input value={null} />));
+}, 1000);)
+```
+
+### Alternative to Controlled Components
+
+- It can sometimes be tediosu to use controlled components, because you need to write an event handler for every way your data can change and pipe all of the input state through a React component.
+- This can become particularly annoyign when you are converting a preexisting codebase to react, or integrating a react app with an on-React library.
+- In these situations, you may want to check out [uncontrolled components](https://reactjs.org/docs/uncontrolled-components.html), an alternative technique for implementing input forms.
+
+### Fully Fledged Solutions
+
+- If you are looking for a complete solution including validation, keeping track of the visited fields, and handling for submission.
+- [Formik](https://formik.org/) is one of the popular choices.
+- However, it is built on teh same principles of controlled components and managing state.
