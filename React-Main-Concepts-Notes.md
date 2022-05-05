@@ -1897,8 +1897,8 @@ setTimeout(function() {
 
 ### Alternative to Controlled Components
 
-- It can sometimes be tediosu to use controlled components, because you need to write an event handler for every way your data can change and pipe all of the input state through a React component.
-- This can become particularly annoyign when you are converting a preexisting codebase to react, or integrating a react app with an on-React library.
+- It can sometimes be tedious to use controlled components, because you need to write an event handler for every way your data can change and pipe all of the input state through a React component.
+- This can become particularly annoying when you are converting a preexisting codebase to react, or integrating a react app with an on-React library.
 - In these situations, you may want to check out [uncontrolled components](https://reactjs.org/docs/uncontrolled-components.html), an alternative technique for implementing input forms.
 
 ### Fully Fledged Solutions
@@ -1906,3 +1906,129 @@ setTimeout(function() {
 - If you are looking for a complete solution including validation, keeping track of the visited fields, and handling for submission.
 - [Formik](https://formik.org/) is one of the popular choices.
 - However, it is built on teh same principles of controlled components and managing state.
+
+## Lifting State Up
+
+- Often, several components need to reflect teh same changing data.
+- We recommend lifting the shared state up to their closest common ancestor.
+
+- In this section, we create a temperature calculator that calculates whether the wather would boil at a given temp.
+
+- We start with a component called `BuilingVerdict`.
+- It accepts the `celsius` temp as a prop, and prints where it is enough to boil the water:
+
+```JAVASCRIPT
+function BoilingVerdict(props) {
+  if (props.celsius >= 100) {
+    return <p>The water would boil.</p>;
+  }
+  return <p>The water would not boil.</p>;
+}
+```
+
+- Next, we will create a component called `Calculator`. It renders an `<input>` that lets you enter the temperature, and keeps its value in `this.state.temperature`.
+
+- Additionally, it renders the `BoilingVerdict` for the current input value.
+
+```JAVASCRIPT
+class Calculator extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {
+      temperature: ''
+    };
+  }
+
+    handleChange(e) {
+      this.setState({temperature: e.target.value});
+    }
+
+    render() {
+      const temperature = this.state.temperature;
+      return (
+        <fieldset>
+          <legend>Ender temperature in Celsius:</legend>
+          <input 
+            value={temperature}
+            onChange={this.handleChange}
+          />
+          <BoilingVerdict 
+            celsius={parseFloat(temperature)} />
+        </fieldset>
+      );
+    }
+}
+```
+
+- Try it on [CodePen](https://codepen.io/gaearon/pen/ZXeOBm?editors=0010)
+
+### Adding a Second Input
+
+- Out new requirement is that, in addition to a Celsius input, we provide a Fahrenheit input, and they are kept in sync.
+
+- We can start by extracting a `TemperatureInput` component from `Calculator`. We will add a new `scale` prop to it that can either be `"c"` or `"f"`.
+
+```JAVASCRIPT
+const scaleNames = {
+  c: 'Celsius',
+  f: 'Fahrenheit'
+};
+
+class Calculator extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {
+      temperature: ''
+    };
+  }
+
+    handleChange(e) {
+      this.setState({temperature: e.target.value});
+    }
+
+    render() {
+      const temperature = this.state.temperature;
+      const scale = this.props.scale;
+
+      return (
+        <fieldset>
+          <legend>Ender temperature in {scaleNames[scale]}:</legend>
+          <input 
+            value={temperature}
+            onChange={this.handleChange}
+          />
+          <BoilingVerdict 
+            celsius={parseFloat(temperature)} />
+        </fieldset>
+      );
+    }
+}
+```
+
+- We can now change the `Calculator` to render two separate temperature inputs:
+
+```JAVASCRIPT
+class Calculator extends React.Component {
+  render() {
+    return (
+      <div>
+        <TemperatureInput scale="c" />
+        <TemperatureInput scale="f" />
+      </div>
+    )
+  }
+}
+```
+
+- Try it on [CodePen](https://codepen.io/gaearon/pen/jGBryx?editors=0010)
+
+- We have two inputs now, but when you ender the temperature in one of them, the other doesn't update. this contradicts oru requirement: we want to keep them in sync.
+
+- We also can't display the `BoilingVerdict` from `Calculator`.
+- The `Calculator` doesn't know the current temperature because it is hidden inside the `TemperatureInput`.
+
+### Writing Conversion Functions
+
+-
