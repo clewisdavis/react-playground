@@ -2031,4 +2031,68 @@ class Calculator extends React.Component {
 
 ### Writing Conversion Functions
 
--
+- First, we will write two function to convert the Celsius to Fahrenheit and back:
+
+```JAVASCRIPT
+function toCelsius(fahrenheit) {
+  return (fahrenheit - 32) * 5 / 9;
+}
+
+function toFehrenheit(celsius) {
+  return (celsius * 9 / 5) + 32;
+}
+```
+
+- Thees two functions convert numbers. We wil write another funciton that takes a string `temperature` and a converter function as arguments and returns a string.
+- We will use it to calculate the value of one input base don the other input.
+
+- It returns an empty string on an invalid `temperature`, and it keeps th eoutput rounded to the third decimal place:
+
+```JAVASCRIPT
+function tryConvert(temperature, convert) {
+  const input = parseFloat(temperature);
+  if (Number.isNaN(input)) {
+    return '';
+  }
+  const output = convert(input);
+  const rounded = Math.round(output * 1000) / 1000;
+  return rounded.toString();
+}
+```
+
+- For example, `tryConvert('abc', toCelsius)` returns an empty string and `tryConvert('10.22', toFahrenheit)` returns `'50.396'`.
+
+### Lifting State Up - Temperature
+
+- Currently, both `temperatureInput` components independently keep their values in the local state:
+
+```JAVASCRIPT
+class TemperatureInput extends Rect.Components {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {temperature: ''};
+  }
+
+  handleChange(e) {
+    this.setState({temperature: e.target.value});
+  }
+
+  render() {
+    const temperature = this.state.temperature;
+  }
+}
+```
+
+- Hoever, we want these two inputs to be in sync with each other.
+- When we update the Celsius input, the Fahrenheit input should reflect the converted temperature, and vice versa.
+
+- In React, sharing state is accomplished by moving it up to the closest common ancestor of the components that need it.
+- This is called **lifting state up**.
+- We will remove the local state from the `TemperatureInput` and move it into the `Calculator` instead.
+
+- If the `Calculator` owns the shared state, it becomes the "source of truth" for the current temperature inboth inputs.
+- It can instruct them both to have values that are consistent with each other.
+- Since the props of both `TemperatureInput` components are coming from the same parent `Calculator` component, the two inputs will always be in sync.
+
+- Let's see how this works steps by step.
