@@ -2096,3 +2096,68 @@ class TemperatureInput extends Rect.Components {
 - Since the props of both `TemperatureInput` components are coming from the same parent `Calculator` component, the two inputs will always be in sync.
 
 - Let's see how this works steps by step.
+
+- First, we replace `this.state.temperature` with `this.props.temperature` in the `temperatureInput component.
+- For now, let's pretend `this.props.temperature` already exists, although we will need to pass it from the `Calculator` in the future:
+
+```JAVASCRIPT
+render() {
+  // Before: const temperature = this.state.temperature;
+  const temperature = this.props.temperature;
+}
+```
+
+- We know that props are ready only. When the `temperature` was in the local state, the `TemperatureInput` could just call `this.setState()` to change it.
+- However, now that the `temperature` is coming from the parent as a prop, the `TemperatureInput` has no control over it.
+
+- In React, this is usually solved by making a component "controlled".
+- Just like the DOM `<input` accepts both a `value` and an `onChange` prop, so can the custom `TemperatureInput` accept both `temperature` and `onTemperatureChange` props from it's parent `Calculator`.
+
+- Now, when the `TemperatureInput` want sto update its termperature, it calls `this.props.onTemperatureChange`:
+
+```JAVASCRIPT
+handleChange(e) {
+  //Before: this.setState({temperature: e.target.value});
+  this.props.onTemperatureChange(e.target.value);
+}
+```
+
+- NOTE: There is not special meaning to either `temperature` or `onTemperatureChange` prop names in custom components. We could have called them anything else, like name them `value` and `onChange` which is a common convention.
+
+- The `onTemperatureChange` prop will be provided together with the `temperature` prop by the parent `Calculator` component.
+- It will handle the change by modifying its own local state, thus re-rendering both inputs with teh new values.
+- We will look at the new `Calculator` implementation soon.
+
+- Before diving into the changes int eh `Calculator`, let's recap our changes to the `TemperatureInput` component.
+- We have removed the local state from it, and instead of reading `this.state.temperature`, we now read `this.props.temperature`.
+- Instead of calling `this.setState()` when we want to make a change, we now call `this.props.onTemperatureChange()`, which will be provided by the `Calculator`:
+
+```JAVASCRIPT
+class TemperatureInput extends Rect.Components {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(e) {
+    this.props.onTemperatureChange(e.target.value);
+  }
+
+  render() {
+    const temperature = this.props.temperature;
+    const scale = this.props.scale;
+    return (
+      <fieldset>
+        <legend>
+          Enter temperature in {scaleNames[scale]};
+        </legend>
+        <input value={temperature} 
+          onChange={this.handleChange}
+        />
+      </fieldset>
+    );
+  }
+}
+```
+
+- Now let's turn to the `Calculator` component.
