@@ -2161,3 +2161,83 @@ class TemperatureInput extends Rect.Components {
 ```
 
 - Now let's turn to the `Calculator` component.
+
+- We will store the current input's `temperature` and `scale` in its local state.
+- This is the state we "lifted up" from the inputs, and it will serve as the "source of truth" for both of them.
+- It is the minimal representation of all the date we need to know in order to render both inputs.
+
+- For example, if we enter 37 into the Celius input, the state of the `Calculator` component will be:
+
+```JAVASCRIPT
+{
+  temperature: '37',
+  scale: 'c'
+}
+```
+
+- If e later edit the Fahrenheit field to be 212, teh state of the `Calculator` will be:
+
+```JAVASCRIPT
+{
+  temperature: '37',
+  scale: 'c'
+}
+```
+
+- We could have store dthe value of both inputs but it turns otu the be unnecesary.
+- It is enough to store the value fo themost recently changed input, and teh scale that it represents.
+- We can then infer the value of the other input based on the current `temperature` and `scale` alone.
+
+- The inputs stay in sync because their values are computer from the same state:
+
+```JAVASCRIPT
+class Calculator extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
+    this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
+    this.state = {temperature: '', scale: 'c'};
+  }
+
+  handleCelsiusChange(temperature) {
+    this.setState({scale: 'c', temperature});
+  }
+
+  handleFahrenheitChange(temperature) {
+    this.setState({scale: 'f', temperature});
+  }
+
+  render() {
+    const scale = this.state.scale;
+    const temperature = this.state.temperature;
+    const celsius = scale === 'f' ? tryConvert(temperature, toCelsius) : temperature;
+    const fahrenheit = scale === 'c' ? tryConvert(temperature, toFahrenheit) : temperature;
+
+    return (
+      <div>
+       <TemperatureInput 
+         scale="c"
+         temperature={celsius}
+         onTemperatureChange={this.handleCelsiusChange} 
+       />
+       <TemperatureInput 
+         scale="f"
+         temperature={fahrenheit}
+         onTemperatureChange={this.handleFahrenheitChange} 
+       />
+       <BoilingVerdict 
+         celsius={parseFloat(celsius)} />
+      </div>
+    );
+  }
+}
+```
+
+- Try it on [CodePen](https://codepen.io/gaearon/pen/WZpxpz?editors=0010)
+
+- No matter which inptut you edit, `this.state.temperature` and `this.state.scale` in the `Calculator` get updated.
+- One of the inputs gets the value as is, so any user input is preserved, and the other input value is always recalculated based on it.
+
+- Let's recap what happens when you edit an input:
+
+  - React calls the function specified
