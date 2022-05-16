@@ -2683,7 +2683,7 @@ Refer to the [React docs](https://reactjs.org/docs/getting-started.html) if you 
 - Let's run through this strategy for our application:
   - `ProductTable` need to filter the product list based on state and `SearchBar` needs to display the search text adn checked state.
   - The common owner component is `FitlerableTable`.
-  - It conceptually makes sense for the filter text and checked value to live in `FilterableProducTable`
+  - It conceptually makes sense for the filter text and checked value to live in `FilterableProductTable`
 
 - Cool, so we have decided that our state lives in `FilterableProductTable`.
 - First, add an instance property `this.state = {filterText: '', inStockOnly: false}` to `FilterProductTable`'s `constructor` to reflect the initial state of your application.
@@ -2693,3 +2693,23 @@ Refer to the [React docs](https://reactjs.org/docs/getting-started.html) if you 
 - You can start to seeing how your application wil behave: set `filterText` to `"ball"` and refresh your app. You'll see the date table is updated correctly.
 
 ## Step 5: Add Inverse Data Flow
+
+- So far, we'v built an app that renders correctly as a function of props and state flowing down the hierarchy.
+- Now its' time to support data flowing the other way: the form components deep in the hierarchy need to update the state in `FilterableProductTable`.
+
+- React makes this data flow explicit to help you understand how your programs works, but it does require a little more typing than a traditional two way data binding.
+
+- If you try to type of check the box in the previous version of the example (step 4), you'll see that React ignores your input.
+- This is intentional, as we've st ehte `value` prop of the `input` to always eb equal to teh `state` passed in from `FilterableProductTable`.
+
+- Let's think about what we want to happen.
+- We want to make sure that whenever the user changes the form, we update the state to reflect teh user input.
+- Since components should only update their own state, `FileterableProductTable` will pass callbacks to `SearchBar` that will fire whenever the state should eb updated.
+- We can use the `onChange` event on the input to be notified fo it.
+- The callbacks passed by `FilterableProductTable` will call `setState()`, adn teh app will eb updated.
+
+## And That's it
+
+- Hopefully, this give you an idea of how to think about building components and applications with React.
+- While it may be a little more typing that you're used to, remember that code is read far more than it's written, and it's less difficult to read this modular, explicit code.
+- As you start to build large libraries of components, you'll appreciate this explicitness and modularity, and with code reuse, your lines of code will start to shrink :)

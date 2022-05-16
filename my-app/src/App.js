@@ -34,7 +34,7 @@ function Greeting(props) {
 function App() {
   return (
     <div className="App">
-      <Welcome name="Chris" />
+      <Welcome name="Ralph" />
       <Greeting isLoggedIn={true} userName="Chris"/>
       <p>This is a description</p>
       <button onClick={buttonPress}>
