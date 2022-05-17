@@ -1,45 +1,119 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 
 function Welcome(props) {
   return <h1>Hello, my name is {props.name}</h1>;
 }
 
-function buttonPress() {
-  console.log('button pressed');
-  alert('Chris here');
-}
-
-function UserGreeting(props) {
-  return (
-    <h2>Welcome Back! {props.userName}</h2>
-  )
-}
-
-function GuestGreeting(props) {
-  return (
-    <h2>Please sign up.</h2>
-  )
-}
-
-function Greeting(props) {
-  const isLoggedIn = props.isLoggedIn;
-  const userName = props.userName;
-  if (isLoggedIn) {
-    return <UserGreeting userName={userName} />;
+class ProductCategoryRow extends React.Component {
+  render() {
+    const category = this.props.category;
+    return (
+      <tr>
+        <th colSpan="2">
+          {category}
+        </th>
+      </tr>
+    );
   }
-  return <GuestGreeting />
 }
+
+class ProductRow extends React.Component {
+  render() {
+    const product = this.props.product;
+    const name = product.stocked ? 
+      product.name : 
+      <span style={{color: 'red'}}>
+        {product.name}
+      </span>;
+
+      return (
+        <tr>
+          <td>{name}</td>
+          <td>{product.price}</td>
+        </tr>
+      );
+  }
+}
+
+class ProductTable extends React.Component {
+  render() {
+    const rows = [];
+    let lastCategory = null;
+
+    this.props.products.forEach((product) => {
+      if (product.category !== lastCategory) {
+        rows.push(
+          <ProductCategoryRow 
+            category={product.category}
+            key={product.category} 
+          />
+        );
+      }
+      rows.push(
+        <ProductRow 
+          product={product}
+          key={product.name}
+        />
+      );
+      lastCategory = product.category;
+    });
+
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    );
+  }
+}
+
+class SearchBar extends React.Component {
+  render() {
+    return (
+      <form>
+        <input type="text" placeholder="Search..." />
+        <p>
+          <input type="checkbox" />
+          {' '}
+          Only show products in stock
+        </p>
+      </form>
+    );
+  }
+}
+
+class FilterableProductTable extends React.Component {
+  render() {
+    return (
+      <div>
+        <SearchBar />
+        <ProductTable products={this.props.products} />
+      </div>
+    );
+  }
+}
+
+const PRODUCTS = [
+  {category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
+  {category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball'},
+  {category: 'Sporting Goods', price: '$29.99', stocked: false, name: 'Basketball'},
+  {category: 'Electronics', price: '$99.99', stocked: true, name: 'iPod Touch'},
+  {category: 'Electronics', price: '$399.99', stocked: false, name: 'iPhone 5'},
+  {category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7'}
+]
+
 
 function App() {
   return (
     <div className="App">
-      <Welcome name="Ralph" />
-      <Greeting isLoggedIn={true} userName="Chris"/>
-      <p>This is a description</p>
-      <button onClick={buttonPress}>
-        Press Me
-      </button>
+      <Welcome name="Chris" />
+      <FilterableProductTable products={PRODUCTS} />
     </div>
   );
 }
